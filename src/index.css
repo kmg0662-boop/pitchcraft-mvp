@@ -241,6 +241,20 @@ textarea:focus {
   border-left: 3px solid #6366f1;
 }
 
+.insight-card {
+  border-left: 4px solid #818cf8 !important;
+  background: rgba(129, 140, 248, 0.05) !important;
+  margin: 1.5rem 0;
+}
+
+.insight-text {
+  font-size: 0.95rem;
+  color: #a5b4fc;
+  font-weight: 500;
+  font-style: italic;
+  line-height: 1.6;
+}
+
 .slide-list {
   list-style: none;
 }
