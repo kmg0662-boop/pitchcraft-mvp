@@ -142,6 +142,47 @@ h1, h2, h3 {
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
 }
 
+.value-props {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  max-width: 900px;
+  margin-bottom: 3rem;
+  animation: fadeIn 1.2s ease-out 0.4s both;
+}
+
+.value-item {
+  text-align: center;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.v-icon {
+  color: #818cf8;
+  margin-bottom: 0.75rem;
+}
+
+.value-item h4 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  color: #e0e7ff;
+}
+
+.value-item p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .value-props {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
 .textarea-wrapper {
   position: relative;
   margin-bottom: 1.5rem;
@@ -192,6 +233,16 @@ textarea:focus {
 
 .primary-btn:active {
   transform: translateY(0) scale(0.98);
+}
+
+.primary-btn.pulse {
+  animation: button-pulse 2s infinite;
+}
+
+@keyframes button-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
 }
 
 .primary-btn:disabled {
@@ -439,12 +490,34 @@ textarea:focus {
 }
 
 .modal-content {
-  width: 90%;
+  width: 95%;
   max-width: 500px;
+  max-height: 90vh;
   position: relative;
   text-align: center;
-  padding: 3rem 2rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
   animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-header {
+  padding: 3rem 2rem 1.5rem;
+}
+
+.modal-body-scroll {
+  padding: 0 2.5rem 2.5rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Custom Scrollbar for Modal */
+.modal-body-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.modal-body-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
 }
 
 .close-btn {
@@ -639,15 +712,22 @@ textarea:focus {
   gap: 0.5rem;
 }
 
-.email-contact {
-  margin-top: 1rem;
+.manual-contact {
+  margin: 1.5rem 0;
+  text-align: left;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.email-link {
+  margin-top: 0.5rem;
   padding: 0.75rem;
-  background: rgba(255,255,255,0.05);
+  background: rgba(129, 140, 248, 0.1);
+  border: 1px dashed rgba(129, 140, 248, 0.4);
   border-radius: 0.5rem;
-  text-align: center;
-  font-weight: 600;
   color: #818cf8;
-  border: 1px dashed rgba(129, 140, 248, 0.5);
+  font-weight: 700;
+  text-align: center;
 }
 
 .footer-note {
