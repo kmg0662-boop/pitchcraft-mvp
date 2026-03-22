@@ -59,7 +59,7 @@ function App() {
   return (
     <div className="app-container">
       <header className="hero">
-        <div className="badge">AntiGravity MVP 01</div>
+        <div className="badge">AntiGravity MVP 02 • <span className="live-text">LIVE</span></div>
         <h1 className="title">
           당신의 아이디어를<br />
           <span>5초 만에 피치덱으로.</span>
@@ -67,6 +67,9 @@ function App() {
         <p className="subtitle">
           한 두 문장만 입력하세요. AI가 투자자를 사로잡는 엘리베이터 피치와 10장의 완벽한 투자유치 슬라이드 구조를 자동으로 완성해 드립니다.
         </p>
+        <div className="live-counter">
+          오늘만 <strong>147개</strong>의 피치덱이 성공적으로 제안되었습니다.
+        </div>
       </header>
 
       <main className="input-section">
@@ -148,6 +151,7 @@ function App() {
           <div className="modal-content glass-panel">
             <button className="close-btn" onClick={() => setShowPaymentModal(false)}><X /></button>
             <div className="modal-header">
+              <div className="limited-badge">⚡ LIMITED TIME OFFER - 90% OFF</div>
               <Zap size={32} color="#818cf8" />
               <h2>Premium Pitch Deck PDF</h2>
               <div className="social-proof">
