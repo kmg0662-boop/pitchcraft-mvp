@@ -1,16 +1,13 @@
 import { useState } from 'react'
 import { Sparkles, Loader2, Presentation, Zap, FileText, CheckCircle2, X } from 'lucide-react'
+import { generatePitch, PitchResult } from './api/generatePitch'
 import './index.css'
 
 function App() {
   const [problem, setProblem] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
   const [showPaymentModal, setShowPaymentModal] = useState(false)
-  const [result, setResult] = useState<null | { 
-    pitch: string, 
-    hooks: string[],
-    slides: Array<{ title: string, desc: string }> 
-  }>(null)
+  const [result, setResult] = useState<null | PitchResult>(null)
 
   // Tracker utility
   const track = (tag: string, value?: any) => {
@@ -18,36 +15,21 @@ function App() {
     if (window.trackEvent) window.trackEvent(tag, value);
   }
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     if (!problem.trim()) return
     setIsGenerating(true)
     track('generation_started', { query: problem });
     
-    // Simulate AI Generation API call
-    setTimeout(() => {
-      setResult({
-        pitch: `이 시장에서 해결되지 않았던 본질적인 문제를 데이터 기반으로 접근합니다. ${problem} 우리는 독자적인 AI 기술을 통해 기존 대비 10배 빠른 솔루션을 제공하며, 글로벌 Niche Market에서 폭발적인 성장을 증명할 것입니다.`,
-        hooks: [
-          "혹시 여러분은 이 문제를 해결하기 위해 매년 수조 원이 낭비되고 있다는 사실을 알고 계셨나요?",
-          "고객이 문을 열고 들어오는 순간, 90%의 거래가 이미 실패하고 있다면 믿으시겠습니까?",
-          "우리는 기술이 아니라, '시간'을 돌려드리는 비즈니스를 하고 있습니다."
-        ],
-        slides: [
-          { title: '문제상황 (The Problem)', desc: '시장의 비효율성과 고객이 겪고 있는 명확한 Pain-Point 제시' },
-          { title: '해결책 (The Solution)', desc: '우리 제품이 어떻게 문제를 압도적으로 해결하는지 (Demo/Screenshot)' },
-          { title: '타겟 시장 (Market Size)', desc: 'TAM, SAM, SOM 구조로 확장 가능한 시장 규모 증명' },
-          { title: '핵심 경쟁력 (Unfair Advantage)', desc: '경쟁사가 쉽게 모방할 수 없는 AI 기술력이나 특허, 운영 노하우' },
-          { title: '비즈니스 모델 (Revenue Model)', desc: '돈을 버는 구조 및 SaaS 구독 기반의 수익 창출 로직' },
-          { title: '시장 진출 전략 (Go-to-Market)', desc: '초기 고객 100명을 모을 구체적이고 실현 가능한 채널 전략' },
-          { title: '경쟁사 분석 (Competition)', desc: '경쟁사 대비 우위 요소(2x2 매트릭스 또는 기능 비교표)' },
-          { title: '팀 멤버 (The Team)', desc: '이 문제를 풀기에 왜 우리 팀이 가장 최적인지 증명' },
-          { title: '재무 예측 (Financial Projections)', desc: '향후 3년간의 성장 추이 및 주요 지표 (CAC, LTV)' },
-          { title: '투자 요청 (The Ask)', desc: '필요 자금과 구체적인 사용 계획(마일스톤 달성 전략)' }
-        ]
-      })
-      setIsGenerating(false)
+    try {
+      const data = await generatePitch(problem);
+      setResult(data);
       track('generation_completed');
-    }, 2500)
+    } catch (err) {
+      console.error(err);
+      alert('생성 중 오류가 발생했습니다.');
+    } finally {
+      setIsGenerating(false);
+    }
   }
 
   const handlePremiumClick = () => {
