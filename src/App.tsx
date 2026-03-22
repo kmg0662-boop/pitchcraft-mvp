@@ -1,6 +1,7 @@
-import { useState } from 'react'
-import { Sparkles, Loader2, Presentation, Zap, FileText, CheckCircle2, X } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Sparkles, Loader2, Presentation, Zap, FileText, CheckCircle2, X, Download, Edit3 } from 'lucide-react'
 import { generatePitch, PitchResult } from './api/generatePitch'
+import { exportToPdf } from './utils/exportPdf'
 import './index.css'
 
 function App() {
@@ -13,6 +14,30 @@ function App() {
   const track = (tag: string, value?: any) => {
     // @ts-ignore
     if (window.trackEvent) window.trackEvent(tag, value);
+  }
+
+  // Persist problem input
+  useEffect(() => {
+    const saved = localStorage.getItem('pitchcraft_problem');
+    if (saved) setProblem(saved);
+  }, []);
+
+  const handleDownloadPDF = async () => {
+    track('download_initiated');
+    const success = await exportToPdf('pitch-deck-content', 'My_PitchCraft_Deck.pdf');
+    if (success) {
+      track('download_success');
+      alert('PDF 다운로드가 완료되었습니다!');
+    } else {
+      alert('다운로드 중 오류가 발생했습니다.');
+    }
+  }
+
+  const updateSlide = (index: number, field: 'title' | 'desc', value: string) => {
+    if (!result) return;
+    const newSlides = [...result.slides];
+    newSlides[index] = { ...newSlides[index], [field]: value };
+    setResult({ ...result, slides: newSlides });
   }
 
   const handleGenerate = async () => {
@@ -87,48 +112,69 @@ function App() {
         <section className="result-section">
           <div className="result-card" style={{ animationDelay: '0s' }}>
             <h3><Zap /> 15초 엘리베이터 피치</h3>
-            <div className="pitch-text">
+            <div className="pitch-text" contentEditable onBlur={(e) => setResult({ ...result!, pitch: e.currentTarget.textContent || '' })}>
               {result.pitch}
             </div>
           </div>
 
-          <div className="result-card insight-card" style={{ animationDelay: '0.05s' }}>
-            <h3><Sparkles /> 전략 컨설턴트 한마디</h3>
-            <p className="insight-text">{result.insight}</p>
-          </div>
-
-          <div className="result-card" style={{ animationDelay: '0.1s' }}>
-            <h3><Sparkles /> 오프닝 훅 (Hooks)</h3>
-            <div className="hooks-grid">
-              {result.hooks.map((hook, i) => (
-                <div key={i} className="hook-item">"{hook}"</div>
-              ))}
+          <div id="pitch-deck-content">
+            <div className="result-card insight-card" style={{ animationDelay: '0.05s' }}>
+              <h3><Sparkles /> 전략 컨설턴트 한마디</h3>
+              <p className="insight-text" contentEditable onBlur={(e) => setResult({ ...result!, insight: e.currentTarget.textContent || '' })}>{result.insight}</p>
             </div>
-          </div>
 
-          <div className="result-card" style={{ animationDelay: '0.2s' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <h3><Presentation /> 피치덱 구조 (10 Slides)</h3>
-              {!showPaymentModal && (
-                <button 
-                  onClick={handlePremiumClick}
-                  className="premium-badge-btn"
-                >
-                  <Sparkles size={14} /> 나머지 7개 슬라이드 잠금 해제 ($1)
-                </button>
-              )}
+            <div className="result-card" style={{ animationDelay: '0.1s' }}>
+              <h3><Sparkles /> 오프닝 훅 (Hooks)</h3>
+              <div className="hooks-grid">
+                {result.hooks.map((hook, i) => (
+                  <div key={i} className="hook-item" contentEditable onBlur={(e) => {
+                    const newHooks = [...result.hooks];
+                    newHooks[i] = e.currentTarget.textContent || '';
+                    setResult({ ...result, hooks: newHooks });
+                  }}>"{hook}"</div>
+                ))}
+              </div>
             </div>
-            <ul className="slide-list">
-              {result.slides.map((slide, idx) => (
-                <li key={idx} className={`slide-item ${idx > 2 ? 'locked' : ''}`} onClick={idx > 2 ? handlePremiumClick : undefined}>
-                  <div className="slide-number">{idx > 2 ? '🔒' : idx + 1}</div>
-                  <div className="slide-content">
-                    <h4>{slide.title}</h4>
-                    <p>{idx > 2 ? '결제 시 상세 가이드와 함께 공개됩니다.' : slide.desc}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
+
+            <div className="result-card" style={{ animationDelay: '0.2s' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                <h3><Presentation /> 피치덱 구조 (10 Slides)</h3>
+                <div className="result-actions">
+                  <button onClick={handleDownloadPDF} className="action-btn download">
+                    <Download size={16} /> PDF 다운로드
+                  </button>
+                  {!showPaymentModal && (
+                    <button 
+                      onClick={handlePremiumClick}
+                      className="premium-badge-btn"
+                    >
+                      <Sparkles size={14} /> 나머지 7개 슬라이드 잠금 해제 ($1)
+                    </button>
+                  )}
+                </div>
+              </div>
+              <ul className="slide-list">
+                {result.slides.map((slide, idx) => (
+                  <li key={idx} className={`slide-item ${idx > 2 ? 'locked' : ''}`} onClick={idx > 2 ? handlePremiumClick : undefined}>
+                    <div className="slide-number">{idx > 2 ? '🔒' : idx + 1}</div>
+                    <div className="slide-content">
+                      <h4 
+                        contentEditable={idx <= 2} 
+                        onBlur={(e) => updateSlide(idx, 'title', e.currentTarget.textContent || '')}
+                      >
+                        {slide.title}
+                      </h4>
+                      <p 
+                        contentEditable={idx <= 2}
+                        onBlur={(e) => updateSlide(idx, 'desc', e.currentTarget.textContent || '')}
+                      >
+                        {idx > 2 ? '결제 시 상세 가이드와 함께 공개됩니다.' : slide.desc}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </section>
       )}
