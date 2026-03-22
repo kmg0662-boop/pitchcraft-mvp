@@ -92,6 +92,11 @@ function App() {
             </div>
           </div>
 
+          <div className="result-card insight-card" style={{ animationDelay: '0.05s' }}>
+            <h3><Sparkles /> 전략 컨설턴트 한마디</h3>
+            <p className="insight-text">{result.insight}</p>
+          </div>
+
           <div className="result-card" style={{ animationDelay: '0.1s' }}>
             <h3><Sparkles /> 오프닝 훅 (Hooks)</h3>
             <div className="hooks-grid">
@@ -147,13 +152,25 @@ function App() {
               <span>— 스타트업 창업자 K씨 (서울)</span>
             </div>
             
-            <div className="payment-box">
+            <div className="payment-selection">
               <div className="price-tag">$1 (약 1,400원)</div>
-              <div className="account-info">
-                <span className="label">입금 계좌 (토스뱅크)</span>
-                <span className="account">1000 - 2549 - 6580</span>
-                <span className="holder">예금주: 김민규</span>
+              <p className="payment-desc">아래 결제 수단을 선택해주세요.</p>
+              
+              <div className="pay-methods">
+                <button className="pay-btn primary">
+                  <span className="icon">💳</span> 신용/체크카드
+                </button>
+                <button className="pay-btn toss">
+                  <span className="icon">🔵</span> 토스페이 (Toss)
+                </button>
+                <button className="pay-btn kakao">
+                  <span className="icon">🟡</span> 카카오페이 (Kakao)
+                </button>
               </div>
+            </div>
+
+            <div className="payment-notice">
+              <p><CheckCircle2 size={16} /> 결제 후 10분 내로 전문 PDF 가이드가 발송됩니다.</p>
             </div>
 
             <div className="instructions">
