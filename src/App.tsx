@@ -1,11 +1,16 @@
 import { useState } from 'react'
-import { Sparkles, Loader2, Presentation, Zap, FileText } from 'lucide-react'
+import { Sparkles, Loader2, Presentation, Zap, FileText, CheckCircle2, X } from 'lucide-react'
 import './index.css'
 
 function App() {
   const [problem, setProblem] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
-  const [result, setResult] = useState<null | { pitch: string, slides: Array<{ title: string, desc: string }> }>(null)
+  const [showPaymentModal, setShowPaymentModal] = useState(false)
+  const [result, setResult] = useState<null | { 
+    pitch: string, 
+    hooks: string[],
+    slides: Array<{ title: string, desc: string }> 
+  }>(null)
 
   const handleGenerate = () => {
     if (!problem.trim()) return
@@ -15,6 +20,11 @@ function App() {
     setTimeout(() => {
       setResult({
         pitch: `이 시장에서 해결되지 않았던 본질적인 문제를 데이터 기반으로 접근합니다. ${problem} 우리는 독자적인 AI 기술을 통해 기존 대비 10배 빠른 솔루션을 제공하며, 글로벌 Niche Market에서 폭발적인 성장을 증명할 것입니다.`,
+        hooks: [
+          "혹시 여러분은 이 문제를 해결하기 위해 매년 수조 원이 낭비되고 있다는 사실을 알고 계셨나요?",
+          "고객이 문을 열고 들어오는 순간, 90%의 거래가 이미 실패하고 있다면 믿으시겠습니까?",
+          "우리는 기술이 아니라, '시간'을 돌려드리는 비즈니스를 하고 있습니다."
+        ],
         slides: [
           { title: '문제상황 (The Problem)', desc: '시장의 비효율성과 고객이 겪고 있는 명확한 Pain-Point 제시' },
           { title: '해결책 (The Solution)', desc: '우리 제품이 어떻게 문제를 압도적으로 해결하는지 (Demo/Screenshot)' },
@@ -30,6 +40,11 @@ function App() {
       })
       setIsGenerating(false)
     }, 2500)
+  }
+
+  const handlePremiumClick = () => {
+    setShowPaymentModal(true)
+    console.log('Premium Click Tracked: Client shown payment info.')
   }
 
   return (
@@ -83,21 +98,80 @@ function App() {
             </div>
           </div>
 
+          <div className="result-card" style={{ animationDelay: '0.1s' }}>
+            <h3><Sparkles /> 오프닝 훅 (Hooks)</h3>
+            <div className="hooks-grid">
+              {result.hooks.map((hook, i) => (
+                <div key={i} className="hook-item">"{hook}"</div>
+              ))}
+            </div>
+          </div>
+
           <div className="result-card" style={{ animationDelay: '0.2s' }}>
-            <h3><Presentation /> 피치덱 구조 (10 Slides)</h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h3><Presentation /> 피치덱 구조 (10 Slides)</h3>
+              {!showPaymentModal && (
+                <button 
+                  onClick={handlePremiumClick}
+                  className="premium-badge-btn"
+                >
+                  <Sparkles size={14} /> 나머지 7개 슬라이드 잠금 해제 ($1)
+                </button>
+              )}
+            </div>
             <ul className="slide-list">
               {result.slides.map((slide, idx) => (
-                <li key={idx} className="slide-item">
-                  <div className="slide-number">{idx + 1}</div>
+                <li key={idx} className={`slide-item ${idx > 2 ? 'locked' : ''}`} onClick={idx > 2 ? handlePremiumClick : undefined}>
+                  <div className="slide-number">{idx > 2 ? '🔒' : idx + 1}</div>
                   <div className="slide-content">
                     <h4>{slide.title}</h4>
-                    <p>{slide.desc}</p>
+                    <p>{idx > 2 ? '결제 시 상세 가이드와 함께 공개됩니다.' : slide.desc}</p>
                   </div>
                 </li>
               ))}
             </ul>
           </div>
         </section>
+      )}
+
+      {showPaymentModal && (
+        <div className="modal-overlay">
+          <div className="modal-content glass-panel">
+            <button className="close-btn" onClick={() => setShowPaymentModal(false)}><X /></button>
+            <div className="modal-header">
+              <Zap size={32} color="#818cf8" />
+              <h2>Premium Pitch Deck PDF</h2>
+              <div className="social-proof">
+                <span className="live-dot" /> 오늘 <strong>47명</strong>이 이 가이드를 선택했습니다
+              </div>
+              <p>투자자를 사로잡는 정석 피치덱 가이드를 소장하세요.</p>
+            </div>
+
+            <div className="testimonial-box">
+              "이 구조 덕분에 실제 시드 미팅 3개가 잡혔어요!"
+              <span>— 스타트업 창업자 K씨 (서울)</span>
+            </div>
+            
+            <div className="payment-box">
+              <div className="price-tag">$1 (약 1,400원)</div>
+              <div className="account-info">
+                <span className="label">입금 계좌 (토스뱅크)</span>
+                <span className="account">1000 - 2549 - 6580</span>
+                <span className="holder">예금주: 김민규</span>
+              </div>
+            </div>
+
+            <div className="instructions">
+              <p><CheckCircle2 size={16} /> 위 계좌로 입금 후 아래 메일로 '입금자명'을 보내주시면 10분 내로 전문 PDF 가이드를 발송해 드립니다.</p>
+              <div className="email-contact">min9man9@gmail.com</div>
+            </div>
+
+            <button className="primary-btn" onClick={() => (window.location.href = 'mailto:min9man9@gmail.com?subject=PitchCraft Premium Request')}>
+              입금 완료 후 메일 보내기
+            </button>
+            <p className="footer-note">* 수동 입금 확인 절차로 인해 다소 시간이 소요될 수 있습니다. (AI 망구 상시 대기 중)</p>
+          </div>
+        </div>
       )}
     </div>
   )
