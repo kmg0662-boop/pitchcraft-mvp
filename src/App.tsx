@@ -12,9 +12,16 @@ function App() {
     slides: Array<{ title: string, desc: string }> 
   }>(null)
 
+  // Tracker utility
+  const track = (tag: string, value?: any) => {
+    // @ts-ignore
+    if (window.trackEvent) window.trackEvent(tag, value);
+  }
+
   const handleGenerate = () => {
     if (!problem.trim()) return
     setIsGenerating(true)
+    track('generation_started', { query: problem });
     
     // Simulate AI Generation API call
     setTimeout(() => {
@@ -39,11 +46,13 @@ function App() {
         ]
       })
       setIsGenerating(false)
+      track('generation_completed');
     }, 2500)
   }
 
   const handlePremiumClick = () => {
     setShowPaymentModal(true)
+    track('premium_button_clicked');
     console.log('Premium Click Tracked: Client shown payment info.')
   }
 
